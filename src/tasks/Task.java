@@ -1,12 +1,20 @@
+package tasks;
+
+import enums.Status;
+
 import java.util.Objects;
 
 public class Task {
 
     private final String nameTask;
-    private final String description;
-    protected Status status = Status.NEW;
+    private String description;
+    private Status status = Status.NEW;
     private int id = -1;
 
+    public Task(String nameTask, String description) {
+        this.nameTask = nameTask;
+        this.description = description;
+    }
 
     public String getNameTask() {
         return nameTask;
@@ -20,17 +28,20 @@ public class Task {
         return status;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Task(String nameTask, String description) {
-        this.nameTask = nameTask;
-        this.description = description;
     }
 
     @Override
@@ -54,7 +65,7 @@ public class Task {
                 "id='" + id + "', " +
                 "nameTask='" + nameTask + "', " +
                 "status='" + status + "', ";
-        if(description != null) {
+        if (description != null) {
             result = result + "description.length='" + description.length();
         } else {
             result = result + "description=null";

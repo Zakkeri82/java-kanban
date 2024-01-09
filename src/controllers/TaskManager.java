@@ -1,3 +1,10 @@
+package controllers;
+
+import enums.Status;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,7 +26,7 @@ public class TaskManager {
     /**
      * получение всех задач
      *
-     * @return список объектов Task
+     * @return список объектов tasks.Task
      */
     public ArrayList<Task> getAllTasks() {
         return new ArrayList<>(tasks.values());
@@ -28,7 +35,7 @@ public class TaskManager {
     /**
      * получение всех подзадач
      *
-     * @return список объектов Subtask
+     * @return список объектов tasks.Subtask
      */
     public ArrayList<Subtask> getAllSubtasks() {
         return new ArrayList<>(subTasks.values());
@@ -37,31 +44,31 @@ public class TaskManager {
     /**
      * получение всех эпиков
      *
-     * @return список объектов Epic
+     * @return список объектов tasks.Epic
      */
     public ArrayList<Epic> getAllEpics() {
         return new ArrayList<>(epics.values());
     }
 
     /**
-     * очистка всех задач из списка (HashMap<Integer, Task> task)
+     * очистка всех задач из списка (HashMap<Integer, tasks.Task> task)
      */
     public void clearAllTasks() {
         tasks.clear();
     }
 
     /**
-     * очистка всех подзадач из списка (HashMap<Integer, Subtask> subTask)
+     * очистка всех подзадач из списка (HashMap<Integer, tasks.Subtask> subTask)
      */
     public void clearAllSubtasks() {
         for (Epic epic : epics.values()) {
-            epic.subsId.clear();
+            epic.getSubsId().clear();
         }
         subTasks.clear();
     }
 
     /**
-     * очистка всех эпиков из списка (HashMap<Integer, Epic> Epic)
+     * очистка всех эпиков из списка (HashMap<Integer, tasks.Epic> tasks.Epic)
      */
     public void clearAllEpics() {
         epics.clear();
@@ -72,7 +79,7 @@ public class TaskManager {
      * получение задачи по ее Id
      *
      * @param id id задачи
-     * @return возвращает один объект Task
+     * @return возвращает один объект tasks.Task
      */
     public Task getTaskById(int id) {
         return tasks.get(id);
@@ -82,7 +89,7 @@ public class TaskManager {
      * получение подзадачи по ее Id
      *
      * @param id id подзадачи
-     * @return возвращает один объект Subtask
+     * @return возвращает один объект tasks.Subtask
      */
     public Subtask getSubtaskById(int id) {
         return subTasks.get(id);
@@ -92,9 +99,9 @@ public class TaskManager {
      * получение эпика по Id
      *
      * @param id id эпика
-     * @return возвращает один объект Epic
+     * @return возвращает один объект tasks.Epic
      */
-    public Epic getEpicBuId(int id) {
+    public Epic getEpicById(int id) {
         return epics.get(id);
     }
 
@@ -115,7 +122,7 @@ public class TaskManager {
     public void deleteSubtaskById(int id) {
         if (subTasks.containsKey(id)) {
             int epicId = subTasks.get(id).getEpicId();
-            epics.get(epicId).subsId.removeIf(n -> n == id);
+            epics.get(epicId).getSubsId().removeIf(n -> n == id);
             subTasks.keySet().removeIf(key -> key == id);
         }
     }
@@ -127,7 +134,7 @@ public class TaskManager {
      */
     public void deleteEpicById(int id) {
         if (epics.containsKey(id)) {
-            ArrayList<Integer> subsId = epics.get(id).subsId;
+            ArrayList<Integer> subsId = epics.get(id).getSubsId();
             if (!subsId.isEmpty()) {
                 for (int sub : subsId) {
                     subTasks.keySet().removeIf(key -> key == sub);
@@ -171,7 +178,7 @@ public class TaskManager {
         if (subtask != null && epic != null && subtask.getId() < 0) {
             subtask.setId(id++);
             subTasks.put(subtask.getId(), subtask);
-            epic.subsId.add(subtask.getId());
+            epic.getSubsId().add(subtask.getId());
             subtask.setEpicId(epic.getId());
         }
     }
@@ -183,7 +190,7 @@ public class TaskManager {
      * @return список подзадач эпика
      */
     public ArrayList<Subtask> getSubtasksByEpicId(int id) {
-        ArrayList<Integer> subsId = epics.get(id).subsId;
+        ArrayList<Integer> subsId = epics.get(id).getSubsId();
         ArrayList<Subtask> sub = new ArrayList<>();
         for (Integer subTaskId : subsId) {
             sub.add(subTasks.get(subTaskId));
@@ -192,38 +199,45 @@ public class TaskManager {
     }
 
     /**
-     * обновление задачи со сменой статуса
+     * обновление задачи
      *
-     * @param task   объект новой задачи
-     * @param status новый статус задачи
+     * @param task объект задачи
      */
-    public void updateTask(Task task, Status status) {
+    public void updateTask(Task task) {
         if (task != null && task.getId() > 0) {
-            task.status = status;
             tasks.put(task.getId(), task);
         }
     }
 
     /**
-     * обновление подзадачи со сменой статуса
+     * обновление эпика
+     *
+     * @param epic объект эпика
+     */
+    public void updateEpic(Epic epic) {
+        if (epic != null && epic.getId() > 0) {
+            epics.put(epic.getId(), epic);
+        }
+    }
+
+    /**
+     * обновление подзадачи
      *
      * @param subtask объект новой подзадачи
-     * @param status  новый статус подзадачи
      */
-    public void updateSubtask(Subtask subtask, Status status) {
+    public void updateSubtask(Subtask subtask) {
         if (subtask != null && subtask.getId() > 0) {
-            subtask.status = status;
             subTasks.put(subtask.getId(), subtask);
-            ArrayList<Integer> subtasksId = epics.get(subtask.getEpicId()).subsId;
-            epics.get(subtask.getEpicId()).status = checkStatusEpic(subtasksId);
+            ArrayList<Integer> subtasksId = epics.get(subtask.getEpicId()).getSubsId();
+            epics.get(subtask.getEpicId()).setStatus(checkStatusEpic(subtasksId));
         }
     }
 
     private Status checkStatusEpic(ArrayList<Integer> subtasksId) {
         Status tempStatus = Status.DONE;
         for (Integer taskId : subtasksId) {
-            if (subTasks.get(taskId).status.equals(Status.IN_PROGRESS)
-                    || subTasks.get(taskId).status.equals(Status.NEW)) {
+            if (subTasks.get(taskId).getStatus().equals(Status.IN_PROGRESS)
+                    || subTasks.get(taskId).getStatus().equals(Status.NEW)) {
                 tempStatus = Status.IN_PROGRESS;
             }
         }

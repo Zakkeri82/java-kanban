@@ -1,3 +1,9 @@
+import controllers.TaskManager;
+import enums.Status;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -10,13 +16,13 @@ public class Main {
         taskManager.createTask(task2);
         Epic epic = new Epic("Первый епик", "простой");
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("подзадача1","простая");
-        Subtask subtask2 = new Subtask("подзадача2","сложная");
+        Subtask subtask = new Subtask("подзадача1", "простая");
+        Subtask subtask2 = new Subtask("подзадача2", "сложная");
         taskManager.createSubtaskByEpic(epic, subtask);
         taskManager.createSubtaskByEpic(epic, subtask2);
         Epic epic2 = new Epic("Второй епик", "сложный");
         taskManager.createEpic(epic2);
-        Subtask subtask3 = new Subtask("подзадача3","очень сложная");
+        Subtask subtask3 = new Subtask("подзадача3", "очень сложная");
         taskManager.createSubtaskByEpic(epic2, subtask3);
 
         System.out.println("Вывод всех тасков");
@@ -34,23 +40,37 @@ public class Main {
         System.out.println();
 
 
-        System.out.println("Изменены статусы задач");
-        taskManager.updateTask(task1, Status.IN_PROGRESS);
-        taskManager.updateTask(task2, Status.DONE);
+        System.out.println("Изменяем задачи");
+        task1.setStatus(Status.IN_PROGRESS);
+        task1.setDescription("новое описание");
+        task2.setStatus(Status.DONE);
+        taskManager.updateTask(task1);
+        taskManager.updateTask(task2);
         System.out.println();
 
-        System.out.println("Проверка статустов задач");
+        System.out.println("Проверка изменения у задач");
         System.out.println(taskManager.getAllTasks());
         System.out.println("========================");
         System.out.println();
 
-
-        System.out.println("Изменил статусы подзадач эпиков");
-        taskManager.updateSubtask(subtask, Status.IN_PROGRESS);
-        taskManager.updateSubtask(subtask3, Status.DONE);
+        System.out.println("изменяем эпик");
+        epic.setDescription("Длиииииииииииииииииииииииииииииииииииинный эпик и большой");
+        taskManager.updateEpic(epic);
         System.out.println();
 
-        System.out.println("Проверка подзадач эпиков с измененными статусами");
+        System.out.println("Проверяем изменения в эпике");
+        System.out.println(taskManager.getEpicById(3));
+        System.out.println();
+
+        System.out.println("Изменяем подзадачи эпиков");
+        subtask.setStatus(Status.IN_PROGRESS);
+        subtask.setDescription("у подзадачи новое описание");
+        subtask3.setStatus(Status.DONE);
+        taskManager.updateSubtask(subtask);
+        taskManager.updateSubtask(subtask3);
+        System.out.println();
+
+        System.out.println("Проверка подзадач эпиков с изменениями");
         System.out.println(taskManager.getSubtasksByEpicId(3));
         System.out.println("========================");
         System.out.println(taskManager.getSubtasksByEpicId(6));
