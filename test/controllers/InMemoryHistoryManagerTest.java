@@ -6,7 +6,8 @@ import tasks.Task;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class InMemoryHistoryManagerTest {
 
@@ -16,8 +17,8 @@ class InMemoryHistoryManagerTest {
 
     @BeforeEach
     void beforeEach() {
-         historyManager = Managers.getDefaultHistory();
-         task = new Task("Задача1", "Описание1");
+        historyManager = Managers.getDefaultHistory();
+        task = new Task("Задача1", "Описание1");
     }
 
     @Test
@@ -37,5 +38,4 @@ class InMemoryHistoryManagerTest {
         assertEquals(history.get(history.size() - 2).getDescription(), "Описание1",
                 "Предыдущай версия задачи изменилась в истории просмотров");
     }
-
 }
