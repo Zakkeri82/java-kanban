@@ -1,5 +1,5 @@
+import controllers.Managers;
 import controllers.TaskManager;
-import enums.Status;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -8,90 +8,55 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
-        TaskManager taskManager = new TaskManager();
+        TaskManager inMemoryTaskManager = Managers.getDefault();
 
         Task task1 = new Task("Первая", "простая");
-        taskManager.createTask(task1);
+        inMemoryTaskManager.createTask(task1);
         Task task2 = new Task("Вторая", "сложная");
-        taskManager.createTask(task2);
+        inMemoryTaskManager.createTask(task2);
         Epic epic = new Epic("Первый епик", "простой");
-        taskManager.createEpic(epic);
+        inMemoryTaskManager.createEpic(epic);
         Subtask subtask = new Subtask("подзадача1", "простая");
         Subtask subtask2 = new Subtask("подзадача2", "сложная");
-        taskManager.createSubtaskByEpic(epic, subtask);
-        taskManager.createSubtaskByEpic(epic, subtask2);
+        inMemoryTaskManager.createSubtaskByEpic(epic, subtask);
+        inMemoryTaskManager.createSubtaskByEpic(epic, subtask2);
         Epic epic2 = new Epic("Второй епик", "сложный");
-        taskManager.createEpic(epic2);
+        inMemoryTaskManager.createEpic(epic2);
         Subtask subtask3 = new Subtask("подзадача3", "очень сложная");
-        taskManager.createSubtaskByEpic(epic2, subtask3);
+        inMemoryTaskManager.createSubtaskByEpic(epic2, subtask3);
 
-        System.out.println("Вывод всех тасков");
-        System.out.println(taskManager.getAllTasks());
-        System.out.println("========================");
-        System.out.println(taskManager.getAllEpics());
-        System.out.println("========================");
-        System.out.println(taskManager.getAllSubtasks());
-        System.out.println();
+        inMemoryTaskManager.getTaskById(1);
+        inMemoryTaskManager.getTaskById(2);
+        inMemoryTaskManager.getEpicById(3);
+        inMemoryTaskManager.getEpicById(6);
+        inMemoryTaskManager.getSubtaskById(4);
+        inMemoryTaskManager.getSubtaskById(5);
+        inMemoryTaskManager.getSubtaskById(7);
 
-        System.out.println("Проверка подзадач эпиков");
-        System.out.println(taskManager.getSubtasksByEpicId(3));
-        System.out.println("========================");
-        System.out.println(taskManager.getSubtasksByEpicId(6));
-        System.out.println();
+        printAllTasks(inMemoryTaskManager);
+    }
 
+    private static void printAllTasks(TaskManager inMemoryTaskManager) {
+        System.out.println("\nЗадачи:");
+        for (Task task : inMemoryTaskManager.getAllTasks()) {
+            System.out.println(task);
+        }
+        System.out.println("\nЭпики:");
+        for (Task epic : inMemoryTaskManager.getAllEpics()) {
+            System.out.println(epic);
 
-        System.out.println("Изменяем задачи");
-        task1.setStatus(Status.IN_PROGRESS);
-        task1.setDescription("новое описание");
-        task2.setStatus(Status.DONE);
-        taskManager.updateTask(task1);
-        taskManager.updateTask(task2);
-        System.out.println();
+            for (Task task : inMemoryTaskManager.getSubtasksByEpicId(epic.getId())) {
+                System.out.println("--> " + task);
+            }
+        }
+        System.out.println("\nПодзадачи:");
+        for (Task subtask : inMemoryTaskManager.getAllSubtasks()) {
+            System.out.println(subtask);
+        }
 
-        System.out.println("Проверка изменения у задач");
-        System.out.println(taskManager.getAllTasks());
-        System.out.println("========================");
-        System.out.println();
-
-        System.out.println("изменяем эпик");
-        epic.setDescription("Длиииииииииииииииииииииииииииииииииииинный эпик и большой");
-        taskManager.updateEpic(epic);
-        System.out.println();
-
-        System.out.println("Проверяем изменения в эпике");
-        System.out.println(taskManager.getEpicById(3));
-        System.out.println();
-
-        System.out.println("Изменяем подзадачи эпиков");
-        subtask.setStatus(Status.IN_PROGRESS);
-        subtask.setDescription("у подзадачи новое описание");
-        subtask3.setStatus(Status.DONE);
-        taskManager.updateSubtask(subtask);
-        taskManager.updateSubtask(subtask3);
-        System.out.println();
-
-        System.out.println("Проверка подзадач эпиков с изменениями");
-        System.out.println(taskManager.getSubtasksByEpicId(3));
-        System.out.println("========================");
-        System.out.println(taskManager.getSubtasksByEpicId(6));
-        System.out.println();
-
-        System.out.println("Проверка изменения статусов эпиков");
-        System.out.println(taskManager.getAllEpics());
-        System.out.println();
-
-        System.out.println("Удаляем");
-        taskManager.deleteTaskById(1);
-        taskManager.deleteSubtaskById(4);
-        taskManager.deleteEpicById(6);
-        System.out.println();
-
-        System.out.println("Проверяем удаление");
-        System.out.println(taskManager.getAllTasks());
-        System.out.println("========================");
-        System.out.println(taskManager.getAllEpics());
-        System.out.println("========================");
-        System.out.println(taskManager.getAllSubtasks());
-        System.out.println();
+        System.out.println("\nИстория:");
+        for (Task task : inMemoryTaskManager.getHistoryManager().getHistory()) {
+            System.out.println(task);
+        }
     }
 }

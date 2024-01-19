@@ -4,7 +4,7 @@ import enums.Status;
 
 import java.util.Objects;
 
-public class Task {
+public class Task implements Cloneable {
 
     private final String nameTask;
     private String description;
@@ -42,6 +42,15 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public Task clone() {
+        try {
+            return (Task) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+        }
     }
 
     @Override
