@@ -12,17 +12,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     private int id;
 
-    HashMap<Integer, Task> tasks;
-    HashMap<Integer, Epic> epics;
-    HashMap<Integer, Subtask> subTasks;
-    HistoryManager historyManager;
+    private final HashMap<Integer, Task> tasks;
+    private final HashMap<Integer, Epic> epics;
+    private final HashMap<Integer, Subtask> subTasks;
+    private final HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         this.id = 1;
         this.tasks = new HashMap<>();
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
-        this.historyManager = Managers.getDefaultHistory();
+        this.historyManager = new InMemoryHistoryManager();
     }
 
     /**
