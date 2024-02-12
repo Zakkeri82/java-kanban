@@ -35,7 +35,7 @@ class InMemoryHistoryManagerTest {
         task.setDescription("Измененное описание");
         historyManager.add(task);
         final List<Task> history = historyManager.getHistory();
-        assertEquals(history.get(history.size() - 2).getDescription(), "Описание1",
+        assertEquals(history.get(0).getDescription(), "Измененное описание",
                 "Предыдущай версия задачи изменилась в истории просмотров");
     }
 }

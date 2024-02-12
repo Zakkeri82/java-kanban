@@ -32,6 +32,9 @@ public class Main {
         inMemoryTaskManager.getSubtaskById(4);
         inMemoryTaskManager.getSubtaskById(5);
         inMemoryTaskManager.getSubtaskById(7);
+        inMemoryTaskManager.getEpicById(6);
+        inMemoryTaskManager.getTaskById(1);
+        inMemoryTaskManager.getTaskById(1);
 
         printAllTasks(inMemoryTaskManager);
     }
