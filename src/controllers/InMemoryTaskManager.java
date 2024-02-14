@@ -69,6 +69,7 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void clearAllTasks() {
+        tasks.keySet().forEach(historyManager::remove);
         tasks.clear();
     }
 
@@ -77,9 +78,8 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void clearAllSubtasks() {
-        for (Epic epic : epics.values()) {
-            epic.getSubsId().clear();
-        }
+        epics.values().forEach(epic -> epic.getSubsId().clear());
+        subTasks.keySet().forEach(historyManager::remove);
         subTasks.clear();
     }
 
@@ -88,8 +88,10 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void clearAllEpics() {
-        epics.clear();
+        subTasks.keySet().forEach(historyManager::remove);
         subTasks.clear();
+        epics.keySet().forEach(historyManager::remove);
+        epics.clear();
     }
 
     /**
