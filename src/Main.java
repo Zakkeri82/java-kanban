@@ -14,24 +14,29 @@ public class Main {
         inMemoryTaskManager.createTask(task1);
         Task task2 = new Task("Вторая", "сложная");
         inMemoryTaskManager.createTask(task2);
+
         Epic epic = new Epic("Первый епик", "простой");
         inMemoryTaskManager.createEpic(epic);
         Subtask subtask = new Subtask("подзадача1", "простая");
         Subtask subtask2 = new Subtask("подзадача2", "сложная");
+        Subtask subtask3 = new Subtask("подзадача3", "сложная");
         inMemoryTaskManager.createSubtaskByEpic(epic, subtask);
         inMemoryTaskManager.createSubtaskByEpic(epic, subtask2);
+        inMemoryTaskManager.createSubtaskByEpic(epic, subtask3);
         Epic epic2 = new Epic("Второй епик", "сложный");
         inMemoryTaskManager.createEpic(epic2);
-        Subtask subtask3 = new Subtask("подзадача3", "очень сложная");
-        inMemoryTaskManager.createSubtaskByEpic(epic2, subtask3);
 
         inMemoryTaskManager.getTaskById(1);
         inMemoryTaskManager.getTaskById(2);
         inMemoryTaskManager.getEpicById(3);
-        inMemoryTaskManager.getEpicById(6);
+        inMemoryTaskManager.getEpicById(7);
         inMemoryTaskManager.getSubtaskById(4);
         inMemoryTaskManager.getSubtaskById(5);
-        inMemoryTaskManager.getSubtaskById(7);
+        inMemoryTaskManager.getSubtaskById(6);
+        inMemoryTaskManager.getEpicById(3);
+        inMemoryTaskManager.getTaskById(2);
+        inMemoryTaskManager.getTaskById(1);
+        inMemoryTaskManager.clearAllEpics();
 
         printAllTasks(inMemoryTaskManager);
     }
@@ -55,8 +60,12 @@ public class Main {
         }
 
         System.out.println("\nИстория:");
-        for (Task task : inMemoryTaskManager.getHistoryManager().getHistory()) {
-            System.out.println(task);
+        if (inMemoryTaskManager.getHistoryManager().getHistory() != null) {
+            for (Task task : inMemoryTaskManager.getHistoryManager().getHistory()) {
+                System.out.println(task);
+            }
+        } else {
+            System.out.println("Истории запросов нет!");
         }
     }
 }
