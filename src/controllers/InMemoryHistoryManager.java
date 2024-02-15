@@ -10,15 +10,12 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private final HashMap<Integer, Node> history;
 
-    private final ArrayList<Node> altLinkedList;
-
     private Node first;
 
     private Node last;
 
     public InMemoryHistoryManager() {
         this.history = new HashMap<>();
-        this.altLinkedList = new ArrayList<>();
     }
 
     @Override
@@ -26,8 +23,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) {
             return;
         }
+        remove(task.getId());
         linkLast(task);
-        history.put(task.getId(), altLinkedList.get(altLinkedList.size() - 1));
+        history.put(task.getId(), last);
 
     }
 
@@ -70,18 +68,10 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private void linkLast(Task task) {
-        remove(task.getId());
-        Node node;
-        if (altLinkedList.isEmpty()) {
-            node = new Node(task, null, null);
-            altLinkedList.add(node);
+        final Node node = new Node(task, last, null);
+        if (first == null) {
             first = node;
         } else {
-            node = new Node(task, last, null);
-            altLinkedList.add(node);
-            if (altLinkedList.size() == 2) {
-                first.setNext(node);
-            }
             last.setNext(node);
         }
         last = node;
