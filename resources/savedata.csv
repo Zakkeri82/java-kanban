@@ -1,0 +1,5 @@
+id,type,name,status,description,epic
+1, TASK, Первая, NEW, простая
+2, TASK, Вторая, NEW, сложная
+3, Epic, Первый епик, NEW, простой
+7, Epic, Второй епик, NEW, сложный

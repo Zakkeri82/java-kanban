@@ -36,7 +36,7 @@ public class Main {
         inMemoryTaskManager.getEpicById(3);
         inMemoryTaskManager.getTaskById(2);
         inMemoryTaskManager.getTaskById(1);
-        inMemoryTaskManager.clearAllEpics();
+
 
         printAllTasks(inMemoryTaskManager);
     }
