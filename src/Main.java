@@ -1,5 +1,6 @@
 import controllers.Managers;
 import controllers.TaskManager;
+import enums.Status;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -14,6 +15,7 @@ public class Main {
         inMemoryTaskManager.createTask(task1);
         Task task2 = new Task("Вторая", "сложная");
         inMemoryTaskManager.createTask(task2);
+        task2.setStatus(Status.IN_PROGRESS);
 
         Epic epic = new Epic("Первый епик", "простой");
         inMemoryTaskManager.createEpic(epic);

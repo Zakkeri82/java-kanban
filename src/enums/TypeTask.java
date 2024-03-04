@@ -2,7 +2,7 @@ package enums;
 
 public enum TypeTask {
 
-    TASK,
+    Task,
     Epic,
     SubTask
 }

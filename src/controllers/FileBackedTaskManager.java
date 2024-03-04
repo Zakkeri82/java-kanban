@@ -1,6 +1,6 @@
 package controllers;
 
-import enums.TypeTask;
+import exception.ManagerSaveException;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -9,6 +9,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -21,27 +26,137 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileSave))) {
-            String header = "id,type,name,status,description,epic\n";
-            writer.write(header);
-            getAllTasks().forEach(task -> {
-                try {
-                    writer.write(task.getId() + ", " + TypeTask.TASK + ", " + task.getNameTask()
-                            + ", " + task.getStatus() + ", " + task.getDescription() + "\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            writer.write("id,type,name,status,description,epic\n");
+            getAllTasks().stream()
+                    .map(CSVTaskManager::getStringFromTask)
+                    .forEach(taskString -> {
+                        try {
+                            writer.write(taskString);
+                        } catch (IOException e) {
+                            throw new ManagerSaveException("Ощибка записи в файл Task");
+                        }
+                    });
+            getAllEpics().stream()
+                    .map(CSVTaskManager::getStringFromTask)
+                    .forEach(epicString -> {
+                        try {
+                            writer.write(epicString);
+                        } catch (IOException e) {
+                            throw new ManagerSaveException("Ощибка записи в файл Epic");
+                        }
+                    });
+            getAllSubtasks().stream()
+                    .map(CSVTaskManager::getStringFromTask)
+                    .forEach(taskString -> {
+                        try {
+                            writer.write(taskString);
+                        } catch (IOException e) {
+                            throw new ManagerSaveException("Ощибка записи в файл Subtask");
+                        }
+                    });
+            try {
+                if (getHistoryManager().getHistory() != null) {
+                    writer.write(CSVTaskManager.historyToString(getHistoryManager()));
+                } else {
+                    writer.write("\nnull");
                 }
-            });
-            getAllEpics().forEach(epic -> {
-                try {
-                    writer.write(epic.getId() + ", " + TypeTask.Epic + ", " + epic.getNameTask()
-                            + ", " + epic.getStatus() + ", " + epic.getDescription() + "\n");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            } catch (IOException e) {
+                throw new ManagerSaveException("Ощибка записи в файл History");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
+            throw new ManagerSaveException("Не удалось открыть BufferedWriter");
         }
+    }
+
+
+    static FileBackedTaskManager loadFromFile(File file) {
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file.toPath().toFile());
+        List<String> loadStrings;
+        Map<Integer, Task> temp = new HashMap<>();
+        try {
+            if(file.exists()) {
+                loadStrings = Files.readAllLines(file.toPath());
+                if (loadStrings.size() > 2) {
+                    for (int i = 1; i < loadStrings.size() - 2; i++) {
+                        Task task = CSVTaskManager.getTaskFromString(loadStrings.get(i));
+                        temp.put(task.getId(), task);
+                        if (task instanceof Epic) {
+                            fileBackedTaskManager.epics.put(task.getId(), (Epic) task);
+                        } else if (task instanceof Subtask) {
+                            fileBackedTaskManager.subTasks.put(task.getId(), (Subtask) task);
+                        } else {
+                            fileBackedTaskManager.tasks.put(task.getId(), task);
+                        }
+                    }
+                }
+                List<Integer> id = CSVTaskManager.historyFromString(loadStrings.get(loadStrings.size() - 1));
+                id.forEach(integer -> fileBackedTaskManager.getHistoryManager().add(temp.get(integer)));
+            } else {
+                System.out.println("Файла для загрузки данных нет");
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка загрузки файла");
+        }
+        return fileBackedTaskManager;
+    }
+
+    @Override
+    public void clearAllTasks() {
+        super.clearAllTasks();
+        save();
+    }
+
+    @Override
+    public void clearAllSubtasks() {
+        super.clearAllSubtasks();
+        save();
+    }
+
+    @Override
+    public void clearAllEpics() {
+        super.clearAllEpics();
+        save();
+    }
+
+    @Override
+    public Task getTaskById(int id) {
+        Task task = super.getTaskById(id);
+        save();
+        return task;
+    }
+
+    @Override
+    public Subtask getSubtaskById(int id) {
+        Subtask subtask = super.getSubtaskById(id);
+        save();
+        return subtask;
+    }
+
+    @Override
+    public Epic getEpicById(int id) {
+        Epic epic = super.getEpicById(id);
+        save();
+        return epic;
+    }
+
+    @Override
+    public void deleteTaskById(int id) {
+        super.deleteTaskById(id);
+        save();
+    }
+
+    @Override
+    public void deleteSubtaskById(int id) {
+        super.deleteSubtaskById(id);
+        save();
+    }
+
+    @Override
+    public void deleteEpicById(int id) {
+        super.deleteEpicById(id);
+        save();
     }
 
     @Override
@@ -60,5 +175,65 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void createSubtaskByEpic(Epic epic, Subtask subtask) {
         super.createSubtaskByEpic(epic, subtask);
         save();
+    }
+
+    @Override
+    public ArrayList<Subtask> getSubtasksByEpicId(int id) {
+        ArrayList<Subtask> arrSubtask = super.getSubtasksByEpicId(id);
+        save();
+        return arrSubtask;
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        super.updateTask(task);
+        save();
+    }
+
+    @Override
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
+        save();
+    }
+
+    @Override
+    public void updateSubtask(Subtask subtask) {
+        super.updateSubtask(subtask);
+        save();
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println("Поехали!");
+        FileBackedTaskManager fileBackedTaskManager = loadFromFile(new File("resources\\saveData.csv"));
+        printAllTasks(fileBackedTaskManager);
+    }
+
+    private static void printAllTasks(TaskManager inMemoryTaskManager) {
+        System.out.println("\nЗадачи:");
+        for (Task task : inMemoryTaskManager.getAllTasks()) {
+            System.out.println(task);
+        }
+        System.out.println("\nЭпики:");
+        for (Task epic : inMemoryTaskManager.getAllEpics()) {
+            System.out.println(epic);
+
+            for (Task task : inMemoryTaskManager.getSubtasksByEpicId(epic.getId())) {
+                System.out.println("--> " + task);
+            }
+        }
+        System.out.println("\nПодзадачи:");
+        for (Task subtask : inMemoryTaskManager.getAllSubtasks()) {
+            System.out.println(subtask);
+        }
+
+        System.out.println("\nИстория:");
+        if (inMemoryTaskManager.getHistoryManager().getHistory() != null) {
+            for (Task task : inMemoryTaskManager.getHistoryManager().getHistory()) {
+                System.out.println(task);
+            }
+        } else {
+            System.out.println("Истории запросов нет!");
+        }
     }
 }
