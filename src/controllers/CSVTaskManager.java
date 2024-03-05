@@ -13,6 +13,12 @@ import java.util.stream.Collectors;
 
 public class CSVTaskManager {
 
+    /**
+     * Метод получает строку String из Task для записи ее в файл
+     *
+     * @param task задача которую нужно сереализовать
+     * @return строка для ызаписи в файл
+     */
     public static String getStringFromTask(Task task) {
         if (task instanceof Epic) {
             return task.getId() + ", " + TypeTask.Epic + ", " + task.getNameTask()
@@ -25,6 +31,12 @@ public class CSVTaskManager {
                 + ", " + task.getStatus() + ", " + task.getDescription() + "\n";
     }
 
+    /**
+     * Получение задачи из строки, десериализация состояния из файла
+     *
+     * @param str входящая строка полученная из файла
+     * @return возвращает задачу
+     */
     public static Task getTaskFromString(String str) {
         String[] elementsTask = str.split(",", 6);
         if (elementsTask[1].trim().equals("Epic")) {
@@ -58,6 +70,12 @@ public class CSVTaskManager {
         return Status.DONE;
     }
 
+    /**
+     * Преобразует историю изменения в строку
+     *
+     * @param manager менеджер истории
+     * @return строка id в истории
+     */
     public static String historyToString(HistoryManager manager) {
         return "\n" + manager.getHistory().stream()
                 .map(Task::getId)
@@ -65,6 +83,12 @@ public class CSVTaskManager {
                 .collect(Collectors.joining(", "));
     }
 
+    /**
+     * Получает список id из строки файла для десереализации менеджера истории
+     *
+     * @param value строка из файла
+     * @return список id
+     */
     public static List<Integer> historyFromString(String value) {
         String[] idHistory = value.split(",");
         return Arrays.stream(idHistory).

@@ -24,6 +24,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.fileSave = file;
     }
 
+    /**
+     * Сохраняет состояние менеджера в файл по строчно
+     */
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileSave))) {
             writer.write("id,type,name,status,description,epic\n");
@@ -70,13 +73,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-
+    /**
+     * Восстанавлвает состояния из сохраненного файла построчно
+     *
+     * @param file файл с сохраненным состоянием
+     * @return восстановленый экземпляр менеджера задач
+     */
     static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file.toPath().toFile());
         List<String> loadStrings;
         Map<Integer, Task> temp = new HashMap<>();
         try {
-            if(file.exists()) {
+            if (file.exists() && file.length() > 0) {
                 loadStrings = Files.readAllLines(file.toPath());
                 if (loadStrings.size() > 2) {
                     for (int i = 1; i < loadStrings.size() - 2; i++) {
@@ -94,7 +102,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 List<Integer> id = CSVTaskManager.historyFromString(loadStrings.get(loadStrings.size() - 1));
                 id.forEach(integer -> fileBackedTaskManager.getHistoryManager().add(temp.get(integer)));
             } else {
-                System.out.println("Файла для загрузки данных нет");
+                System.out.println("Файл для загрузки данных отсутствует или пустой");
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка загрузки файла");
@@ -205,7 +213,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
-        FileBackedTaskManager fileBackedTaskManager = loadFromFile(new File("resources\\saveData.csv"));
+        FileBackedTaskManager fileBackedTaskManager = loadFromFile(new File("saveData.csv"));
         printAllTasks(fileBackedTaskManager);
     }
 
