@@ -91,8 +91,8 @@ public class CSVTaskManager {
      */
     public static List<Integer> historyFromString(String value) {
         String[] idHistory = value.split(",");
-        return Arrays.stream(idHistory).
-                map(id -> Integer.parseInt(id.trim()))
+        return Arrays.stream(idHistory)
+                .map(id -> Integer.parseInt(id.trim()))
                 .collect(Collectors.toList());
     }
 }
