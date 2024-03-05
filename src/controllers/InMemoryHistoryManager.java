@@ -46,11 +46,13 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (node == null) {
             return;
         }
+
         if(node.getNext() == null && node.getPrev() == null) {
             first = null;
             last = null;
             return;
         }
+
         if (node.getNext() == null) {
             node.getPrev().setNext(null);
             last = node.getPrev();
