@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import static controllers.FileBackedTaskManager.loadFromFile;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTaskManagerTest {
@@ -27,7 +26,7 @@ class FileBackedTaskManagerTest {
         } catch (IOException e) {
             throw new ManagerSaveException("Тестовый файл не создался");
         }
-        fileBackedTaskManager = loadFromFile(tempFile);
+        fileBackedTaskManager = new FileBackedTaskManager(tempFile);
     }
 
     @AfterEach
@@ -59,7 +58,7 @@ class FileBackedTaskManagerTest {
             throw new RuntimeException(e);
         }
         assertEquals("id,type,name,status,description,epic", loadStrings.get(0), "Файл пустой");
-        assertEquals("1, Task, Первая, NEW, простая", loadStrings.get(1), "Task в файл не сохранён");
-        assertEquals("2, Epic, Первый епик, NEW, простой, []", loadStrings.get(2), "Epic в файл не сохранён");
+        assertEquals("1,Task,Первая,NEW,простая,null", loadStrings.get(1), "Task в файл не сохранён");
+        assertEquals("2,Epic,Первый епик,NEW,простой,null", loadStrings.get(2), "Epic в файл не сохранён");
     }
 }

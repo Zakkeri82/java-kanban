@@ -6,7 +6,6 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,15 +19,8 @@ public class CSVTaskManager {
      * @return строка для ызаписи в файл
      */
     public static String getStringFromTask(Task task) {
-        if (task instanceof Epic) {
-            return task.getId() + ", " + TypeTask.Epic + ", " + task.getNameTask()
-                    + ", " + task.getStatus() + ", " + task.getDescription() + ", " + ((Epic) task).getSubsId() + "\n";
-        } else if (task instanceof Subtask) {
-            return task.getId() + ", " + TypeTask.SubTask + ", " + task.getNameTask()
-                    + ", " + task.getStatus() + ", " + task.getDescription() + ", " + ((Subtask) task).getEpicId() + "\n";
-        }
-        return task.getId() + ", " + TypeTask.Task + ", " + task.getNameTask()
-                + ", " + task.getStatus() + ", " + task.getDescription() + "\n";
+        return task.getId() + "," + task.getType() + "," + task.getNameTask()
+                + "," + task.getStatus() + "," + task.getDescription() + "," + task.getEpicId() + "\n";
     }
 
     /**
@@ -38,36 +30,33 @@ public class CSVTaskManager {
      * @return возвращает задачу
      */
     public static Task getTaskFromString(String str) {
-        String[] elementsTask = str.split(",", 6);
-        if (elementsTask[1].trim().equals("Epic")) {
-            Epic epic = new Epic(elementsTask[2].trim(), elementsTask[4].trim());
-            epic.setId(Integer.parseInt(elementsTask[0].trim()));
-            epic.setStatus(getStatusFromString(elementsTask[3].trim()));
-            if (!elementsTask[5].trim().equals("[]")) {
-                String[] subId = elementsTask[5].replaceAll("\\[|\\]", "").split(",");
-                epic.setSubsId(new ArrayList<>(Arrays.stream(subId).map(String::trim).map(Integer::parseInt).collect(Collectors.toList())));
-            }
+        String[] elementsTask = str.split(",");
+        final int id = Integer.parseInt(elementsTask[0]);
+        final TypeTask type = TypeTask.valueOf(elementsTask[1]);
+        final String name = elementsTask[2];
+        final Status status = Status.valueOf(elementsTask[3]);
+        final String description = elementsTask[4];
+        int epicId = 0;
+        if (type.equals(TypeTask.SubTask)) {
+            epicId = Integer.parseInt(elementsTask[5]);
+        }
+
+        if (type.equals(TypeTask.Epic)) {
+            Epic epic = new Epic(name, description);
+            epic.setId(id);
+            epic.setStatus(status);
             return epic;
-        } else if (elementsTask[1].trim().equals("SubTask")) {
-            Subtask subtask = new Subtask(elementsTask[2].trim(), elementsTask[4].trim());
-            subtask.setId(Integer.parseInt(elementsTask[0].trim()));
-            subtask.setStatus(getStatusFromString(elementsTask[3].trim()));
-            subtask.setEpicId(Integer.parseInt(elementsTask[5].trim()));
+        } else if (type.equals(TypeTask.SubTask)) {
+            Subtask subtask = new Subtask(name, description);
+            subtask.setId(id);
+            subtask.setStatus(status);
+            subtask.setEpicId(epicId);
             return subtask;
         }
-        Task task = new Task(elementsTask[2].trim(), elementsTask[4].trim());
-        task.setId(Integer.parseInt(elementsTask[0].trim()));
-        task.setStatus(getStatusFromString(elementsTask[3].trim()));
+        Task task = new Task(name, description);
+        task.setId(id);
+        task.setStatus(status);
         return task;
-    }
-
-    private static Status getStatusFromString(String status) {
-        if (status.equals("NEW")) {
-            return Status.NEW;
-        } else if (status.equals("IN_PROGRESS")) {
-            return Status.IN_PROGRESS;
-        }
-        return Status.DONE;
     }
 
     /**

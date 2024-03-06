@@ -61,7 +61,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 if (getHistoryManager().getHistory() != null) {
                     writer.write(CSVTaskManager.historyToString(getHistoryManager()));
                 } else {
-                    writer.write("\nnull");
+                    writer.newLine();
                 }
             } catch (IOException e) {
                 throw new ManagerSaveException("Ощибка записи в файл History");
@@ -102,7 +102,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 List<Integer> id = CSVTaskManager.historyFromString(loadStrings.get(loadStrings.size() - 1));
                 id.forEach(integer -> fileBackedTaskManager.getHistoryManager().add(temp.get(integer)));
             } else {
-                System.out.println("Файл для загрузки данных отсутствует или пустой");
+                throw new ManagerSaveException("Файл для загрузки данных отсутствует или пустой");
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка загрузки файла");

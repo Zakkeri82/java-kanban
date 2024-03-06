@@ -1,5 +1,7 @@
 package tasks;
 
+import enums.TypeTask;
+
 public class Subtask extends Task {
 
     private int epicId;
@@ -9,11 +11,16 @@ public class Subtask extends Task {
         this.epicId = -1;
     }
 
-    public int getEpicId() {
+    public Integer getEpicId() {
         return epicId;
     }
 
     public void setEpicId(int epicId) {
         this.epicId = epicId;
+    }
+
+    @Override
+    public TypeTask getType() {
+        return TypeTask.SubTask;
     }
 }

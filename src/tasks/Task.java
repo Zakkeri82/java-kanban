@@ -1,6 +1,7 @@
 package tasks;
 
 import enums.Status;
+import enums.TypeTask;
 
 import java.util.Objects;
 
@@ -42,6 +43,14 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public TypeTask getType() {
+        return TypeTask.Task;
+    }
+
+    public Integer getEpicId() {
+        return null;
     }
 
     @Override
