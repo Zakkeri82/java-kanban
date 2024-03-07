@@ -51,6 +51,9 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.createTask(task1);
         Epic epic = new Epic("Первый епик", "простой");
         fileBackedTaskManager.createEpic(epic);
+        fileBackedTaskManager.getTaskById(1);
+        fileBackedTaskManager.getEpicById(2);
+
         List<String> loadStrings;
         try {
             loadStrings = Files.readAllLines(tempFile.toPath());
@@ -60,5 +63,8 @@ class FileBackedTaskManagerTest {
         assertEquals("id,type,name,status,description,epic", loadStrings.get(0), "Файл пустой");
         assertEquals("1,Task,Первая,NEW,простая,null", loadStrings.get(1), "Task в файл не сохранён");
         assertEquals("2,Epic,Первый епик,NEW,простой,null", loadStrings.get(2), "Epic в файл не сохранён");
+        FileBackedTaskManager newfileBackedTaskManager = FileBackedTaskManager.loadFromFile(tempFile);
+        assertEquals(1, newfileBackedTaskManager.tasks.size(), "Не правильная загрузка Task");
+        assertEquals(1, newfileBackedTaskManager.epics.size(), "Не правильная загрузка Epic");
     }
 }
