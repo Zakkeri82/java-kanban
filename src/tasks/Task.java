@@ -3,6 +3,8 @@ package tasks;
 import enums.Status;
 import enums.TypeTask;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -10,6 +12,8 @@ public class Task {
     private final String nameTask;
     private String description;
     private Status status = Status.NEW;
+    private LocalDateTime startTime;
+    private Duration duration;
     private int id = -1;
 
     public Task(String nameTask, String description) {
@@ -45,11 +49,32 @@ public class Task {
         this.id = id;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     public TypeTask getType() {
         return TypeTask.Task;
     }
 
     public Integer getEpicId() {
+        return null;
+    }
+
+    public LocalDateTime getEndTime() {
+
         return null;
     }
 
