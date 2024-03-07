@@ -1,5 +1,7 @@
 package tasks;
 
+import enums.TypeTask;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -17,5 +19,10 @@ public class Epic extends Task {
 
     public void setSubsId(ArrayList<Integer> subsId) {
         this.subsId = subsId;
+    }
+
+    @Override
+    public TypeTask getType() {
+        return TypeTask.Epic;
     }
 }
