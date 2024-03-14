@@ -29,7 +29,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
      */
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileSave))) {
-            writer.write("id,type,name,status,description,epic\n");
+            writer.write("id,type,name,status,description,epic,startTime,duration\n");
             getAllTasks().stream()
                     .map(CSVTaskManager::getStringFromTask)
                     .forEach(taskString -> {

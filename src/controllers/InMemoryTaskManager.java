@@ -215,6 +215,9 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.put(subtask.getId(), subtask);
             epic.getSubsId().add(subtask.getId());
             subtask.setEpicId(epic.getId());
+            if (epic.getEndTime() == null || subtask.getEndTime().isAfter(epic.getEndTime())) {
+                epic.setEndTime(subtask.getEndTime());
+            }
         }
     }
 
@@ -269,6 +272,10 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.put(subtask.getId(), subtask);
             ArrayList<Integer> subtasksId = epics.get(subtask.getEpicId()).getSubsId();
             epics.get(subtask.getEpicId()).setStatus(checkStatusEpic(subtasksId));
+            if (epics.get(subtask.getEpicId()).getEndTime() == null
+                    || subtask.getEndTime().isAfter(epics.get(subtask.getEpicId()).getEndTime())) {
+                epics.get(subtask.getEpicId()).setEndTime(subtask.getEndTime());
+            }
         }
     }
 

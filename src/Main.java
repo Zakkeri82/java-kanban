@@ -5,23 +5,26 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
         TaskManager inMemoryTaskManager = Managers.getDefault();
 
-        Task task1 = new Task("Первая", "простая");
+        Task task1 = new Task("Первая", "простая", LocalDateTime.now(), Duration.ofMinutes(10));
         inMemoryTaskManager.createTask(task1);
-        Task task2 = new Task("Вторая", "сложная");
+        Task task2 = new Task("Вторая", "сложная", LocalDateTime.now().plusMinutes(100), Duration.ofMinutes(30));
         inMemoryTaskManager.createTask(task2);
         task2.setStatus(Status.IN_PROGRESS);
 
         Epic epic = new Epic("Первый епик", "простой");
         inMemoryTaskManager.createEpic(epic);
-        Subtask subtask = new Subtask("подзадача1", "простая");
-        Subtask subtask2 = new Subtask("подзадача2", "сложная");
-        Subtask subtask3 = new Subtask("подзадача3", "сложная");
+        Subtask subtask = new Subtask("подзадача1", "простая", LocalDateTime.now(), Duration.ofMinutes(10));
+        Subtask subtask2 = new Subtask("подзадача2", "сложная", LocalDateTime.now().plusHours(23), Duration.ofMinutes(35));
+        Subtask subtask3 = new Subtask("подзадача3", "сложная", LocalDateTime.now().plusDays(2), Duration.ofMinutes(55));
         inMemoryTaskManager.createSubtaskByEpic(epic, subtask);
         inMemoryTaskManager.createSubtaskByEpic(epic, subtask2);
         inMemoryTaskManager.createSubtaskByEpic(epic, subtask3);

@@ -16,9 +16,11 @@ public class Task {
     private Duration duration;
     private int id = -1;
 
-    public Task(String nameTask, String description) {
+    public Task(String nameTask, String description, LocalDateTime startTime, Duration duration) {
         this.nameTask = nameTask;
         this.description = description;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     public String getNameTask() {
@@ -74,8 +76,7 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-
-        return null;
+        return startTime.plus(duration);
     }
 
     @Override
@@ -100,10 +101,12 @@ public class Task {
                 "nameTask='" + nameTask + "', " +
                 "status='" + status + "', ";
         if (description != null) {
-            result = result + "description.length='" + description.length();
+            result = result + "description.length='" + description.length() + "', ";
         } else {
-            result = result + "description=null";
+            result = result + "description=null, ";
         }
+        result = result + "startTime='" + startTime + "', " +
+                "duration='" + duration + "'";
         return result + "}";
     }
 }
