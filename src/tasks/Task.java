@@ -106,6 +106,7 @@ public class Task {
             result = result + "description=null, ";
         }
         result = result + "startTime='" + startTime + "', " +
+                "endTime='" + getEndTime() + "', " +
                 "duration='" + duration + "'";
         return result + "}";
     }

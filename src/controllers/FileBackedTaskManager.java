@@ -243,5 +243,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } else {
             System.out.println("Истории запросов нет!");
         }
+        System.out.println("\nПо приоритету:");
+        for (Task task : inMemoryTaskManager.getPrioritizedTasks()) {
+            System.out.println(task);
+        }
     }
 }
