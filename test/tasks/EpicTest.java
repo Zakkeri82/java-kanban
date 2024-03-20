@@ -28,7 +28,7 @@ class EpicTest {
 
     @Test
     void checkEpicWithOneId() {
-        assertEquals(epic.getId(), epic.getId(), "Эпики с одинаковым id не равны друг другу");
+        assertEquals(epic, epic, "Эпики с одинаковым id не равны друг другу");
     }
 
     @Test

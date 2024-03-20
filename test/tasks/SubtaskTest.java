@@ -19,6 +19,6 @@ class SubtaskTest {
 
     @Test
     void checkSubtaskWithOneId() {
-        assertEquals(subtask.getId(), subtask.getId(), "Подзадачи с одинаковым id не равны друг другу");
+        assertEquals(subtask, subtask, "Подзадачи с одинаковым id не равны друг другу");
     }
 }

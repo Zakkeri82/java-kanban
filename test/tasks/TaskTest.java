@@ -19,6 +19,6 @@ class TaskTest {
 
     @Test
     void checkTaskWithOneId() {
-        assertEquals(task.getId(), task.getId(), "Задачи с одинаковым id не равны друг другу");
+        assertEquals(task, task, "Задачи с одинаковым id не равны друг другу");
     }
 }
