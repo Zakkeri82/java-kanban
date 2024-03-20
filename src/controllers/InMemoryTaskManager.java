@@ -346,8 +346,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private boolean checkIntersectionTime(Task task1, Task task2) {
-        if (task1 != null && task2 != null) {
+    static boolean checkIntersectionTime(Task task1, Task task2) {
+        if ((task1 != null) && (task2 != null) && (task1.getId() != task2.getId())) {
             return task1.getStartTime().isBefore(task2.getEndTime())
                     && task1.getEndTime().isAfter(task2.getStartTime());
         }

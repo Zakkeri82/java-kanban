@@ -53,8 +53,12 @@ public class CSVTaskManager {
         if (type.equals(TypeTask.SubTask)) {
             epicId = Integer.parseInt(elementsTask[5]);
         }
-        final LocalDateTime startTime = LocalDateTime.parse(elementsTask[6]);
-        final Duration duration = Duration.parse(elementsTask[7]);
+        final String startTimeStr = elementsTask[6];
+        final String durationStr = elementsTask[7];
+        final LocalDateTime startTime = !startTimeStr.equals("null")
+                ? LocalDateTime.parse(startTimeStr.replace(" ", "T")) : null;
+        final Duration duration = !durationStr.equals("null")
+                ? Duration.ofMinutes(Integer.parseInt(durationStr)) : null;
 
         if (type.equals(TypeTask.Epic)) {
             Epic epic = new Epic(name, description);
