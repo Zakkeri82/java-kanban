@@ -24,12 +24,7 @@ public class InMemoryTaskManager implements TaskManager {
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
         this.historyManager = new InMemoryHistoryManager();
-        this.prioritizedTasks = new TreeSet<>(new Comparator<Task>() {
-            @Override
-            public int compare(Task task1, Task task2) {
-                return task1.getStartTime().compareTo(task2.getStartTime());
-            }
-        });
+        this.prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
     /**
