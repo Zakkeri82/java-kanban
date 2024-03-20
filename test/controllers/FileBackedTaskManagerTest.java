@@ -55,9 +55,8 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
     @Test()
     void checkManagerSaveException() {
-        assertThrows(ManagerSaveException.class, () -> {
-            FileBackedTaskManager.loadFromFile(new File("noExist.csv"));
-        }, "Загрузка с не существующего файла должна приводить к исключению");
+        assertThrows(ManagerSaveException.class, () -> FileBackedTaskManager.loadFromFile(new File("noExist.csv")),
+                "Загрузка с не существующего файла должна приводить к исключению");
     }
 
     @Test
