@@ -53,6 +53,13 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertNull(taskManager.getHistoryManager().getHistory(), "Присутствует история");
     }
 
+    @Test()
+    void checkManagerSaveException() {
+        assertThrows(ManagerSaveException.class, () -> {
+            FileBackedTaskManager.loadFromFile(new File("noExist.csv"));
+        }, "Загрузка с не существующего файла должна приводить к исключению");
+    }
+
     @Test
     void checkSaveAndLoadTaskToFile() {
         LocalDateTime startTask = LocalDateTime.now();
