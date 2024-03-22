@@ -24,7 +24,8 @@ public class InMemoryTaskManager implements TaskManager {
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
         this.historyManager = new InMemoryHistoryManager();
-        this.prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        this.prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+                Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Task::getId));
     }
 
     /**
@@ -149,6 +150,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTaskById(int id) {
         tasks.keySet().removeIf(key -> key == id);
         historyManager.remove(id);
+        prioritizedTasks.removeIf(task -> task.getId() == id);
     }
 
     /**
@@ -160,10 +162,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubtaskById(int id) {
         if (subTasks.containsKey(id)) {
             int epicId = subTasks.get(id).getEpicId();
-            setTimeEpic(epicId);
             epics.get(epicId).getSubsId().removeIf(n -> n == id);
+            setTimeEpic(epicId);
             subTasks.keySet().removeIf(key -> key == id);
             historyManager.remove(id);
+            prioritizedTasks.removeIf(subTask -> subTask.getId() == id);
         }
     }
 
@@ -266,6 +269,7 @@ public class InMemoryTaskManager implements TaskManager {
                 .anyMatch(task1 -> true);
         if (task != null && task.getId() > 0 && !intersection) {
             tasks.put(task.getId(), task);
+            prioritizedTasks.remove(task);
             addTaskToPrioritizedTasksSet(task);
         }
     }
@@ -297,6 +301,7 @@ public class InMemoryTaskManager implements TaskManager {
             ArrayList<Integer> subtasksId = epics.get(subtask.getEpicId()).getSubsId();
             epics.get(subtask.getEpicId()).setStatus(checkStatusEpic(subtasksId));
             setTimeEpic(subtask.getEpicId());
+            prioritizedTasks.remove(subtask);
             addTaskToPrioritizedTasksSet(subtask);
         }
     }
