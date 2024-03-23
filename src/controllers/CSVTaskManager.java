@@ -6,6 +6,9 @@ import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,11 +19,21 @@ public class CSVTaskManager {
      * Метод получает строку String из Task для записи ее в файл
      *
      * @param task задача которую нужно сереализовать
-     * @return строка для ызаписи в файл
+     * @return строка для записи в файл
      */
     public static String getStringFromTask(Task task) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = null;
+        String taskDuration = null;
+        if (task.getStartTime() != null) {
+            formattedDateTime = task.getStartTime().format(formatter);
+        }
+        if (task.getDuration() != null) {
+            taskDuration = String.valueOf(task.getDuration().toMinutes());
+        }
         return task.getId() + "," + task.getType() + "," + task.getNameTask()
-                + "," + task.getStatus() + "," + task.getDescription() + "," + task.getEpicId() + "\n";
+                + "," + task.getStatus() + "," + task.getDescription() + "," + task.getEpicId()
+                + "," + formattedDateTime + "," + taskDuration + "\n";
     }
 
     /**
@@ -40,6 +53,12 @@ public class CSVTaskManager {
         if (type.equals(TypeTask.SubTask)) {
             epicId = Integer.parseInt(elementsTask[5]);
         }
+        final String startTimeStr = elementsTask[6];
+        final String durationStr = elementsTask[7];
+        final LocalDateTime startTime = !startTimeStr.equals("null")
+                ? LocalDateTime.parse(startTimeStr.replace(" ", "T")) : null;
+        final Duration duration = !durationStr.equals("null")
+                ? Duration.ofMinutes(Integer.parseInt(durationStr)) : null;
 
         if (type.equals(TypeTask.Epic)) {
             Epic epic = new Epic(name, description);
@@ -47,13 +66,13 @@ public class CSVTaskManager {
             epic.setStatus(status);
             return epic;
         } else if (type.equals(TypeTask.SubTask)) {
-            Subtask subtask = new Subtask(name, description);
+            Subtask subtask = new Subtask(name, description, startTime, duration);
             subtask.setId(id);
             subtask.setStatus(status);
             subtask.setEpicId(epicId);
             return subtask;
         }
-        Task task = new Task(name, description);
+        Task task = new Task(name, description, startTime, duration);
         task.setId(id);
         task.setStatus(status);
         return task;

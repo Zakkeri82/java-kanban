@@ -3,6 +3,9 @@ package tasks;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SubtaskTest {
@@ -11,7 +14,7 @@ class SubtaskTest {
 
     @BeforeEach
     void beforeEach() {
-        subtask = new Subtask("Подзадача1", "Описание1");
+        subtask = new Subtask("Подзадача1", "Описание1", LocalDateTime.now(), Duration.ofHours(5));
     }
 
     @Test
