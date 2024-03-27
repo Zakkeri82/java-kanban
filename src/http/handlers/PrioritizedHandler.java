@@ -5,8 +5,11 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import controllers.TaskManager;
 import http.HttpTaskServer;
+import http.utils.ResponseHelper;
+import tasks.Task;
 
 import java.io.IOException;
+import java.util.List;
 
 public class PrioritizedHandler implements HttpHandler {
 
@@ -21,20 +24,14 @@ public class PrioritizedHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        final String query = exchange.getRequestURI().getQuery();
-        switch (exchange.getRequestMethod()) {
-            case "GET": {
-                break;
+        final String[] partsPaths = exchange.getRequestURI().getPath().split("/");
+        if (exchange.getRequestMethod().equals("GET")) {
+            if (partsPaths.length == 2) {
+                List<Task> allTasks = taskManager.getPrioritizedTasks();
+                ResponseHelper.sendOk(exchange, gson, allTasks.toArray(new Task[0]));
             }
-            case "POST": {
-                break;
-            }
-            case "DELETE": {
-                break;
-            }
-            default: {
-
-            }
+        } else {
+            ResponseHelper.sendMethodNotAllowed(exchange);
         }
     }
 }

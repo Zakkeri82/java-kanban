@@ -5,14 +5,13 @@ import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import controllers.TaskManager;
-import enums.HttpStatusCode;
 import enums.Status;
 import http.HttpTaskServer;
+import http.utils.ResponseHelper;
 import tasks.Task;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -34,38 +33,23 @@ public class TasksHandler implements HttpHandler {
         switch (exchange.getRequestMethod()) {
             case "GET": {
                 if (partsPaths.length == 2) {
-                    exchange.sendResponseHeaders(HttpStatusCode.OK.getCode(), 0);
                     ArrayList<Task> allTasks = taskManager.getAllTasks();
-                    try (OutputStream os = exchange.getResponseBody()) {
-                        os.write(gson.toJson(allTasks).getBytes());
-                    }
+                    ResponseHelper.sendOk(exchange, gson, allTasks.toArray(new Task[0]));
                 } else if (partsPaths.length == 3) {
                     int taskId;
                     try {
                         taskId = Integer.parseInt(partsPaths[2]);
                         Task resultTask = taskManager.getTaskById(taskId);
                         if (resultTask != null) {
-                            exchange.sendResponseHeaders(HttpStatusCode.OK.getCode(), 0);
-                            try (OutputStream os = exchange.getResponseBody()) {
-                                os.write(gson.toJson(resultTask).getBytes());
-                            }
+                            ResponseHelper.sendOk(exchange, gson, resultTask);
                         } else {
-                            exchange.sendResponseHeaders(HttpStatusCode.NOT_FOUND.getCode(), 0);
-                            try (OutputStream os = exchange.getResponseBody()) {
-                                os.write(HttpStatusCode.NOT_FOUND.getMessage().getBytes());
-                            }
+                            ResponseHelper.sendNotFound(exchange);
                         }
                     } catch (NumberFormatException e) {
-                        exchange.sendResponseHeaders(HttpStatusCode.BAD_REQUEST.getCode(), 0);
-                        try (OutputStream os = exchange.getResponseBody()) {
-                            os.write(HttpStatusCode.BAD_REQUEST.getMessage().getBytes());
-                        }
+                        ResponseHelper.sendBadRequest(exchange);
                     }
                 } else {
-                    exchange.sendResponseHeaders(HttpStatusCode.BAD_REQUEST.getCode(), 0);
-                    try (OutputStream os = exchange.getResponseBody()) {
-                        os.write(HttpStatusCode.BAD_REQUEST.getMessage().getBytes());
-                    }
+                    ResponseHelper.sendBadRequest(exchange);
                 }
                 break;
             }
@@ -76,44 +60,66 @@ public class TasksHandler implements HttpHandler {
                     Task task = gson.fromJson(body, Task.class);
                     if (partsPaths.length == 2 && query == null) {
                         task.setStatus(Status.NEW);
+                        int beginSize = taskManager.getAllTasks().size();
                         taskManager.createTask(task);
-                        exchange.sendResponseHeaders(HttpStatusCode.CREATED.getCode(), 0);
-                        try (OutputStream os = exchange.getResponseBody()) {
-                            os.write(HttpStatusCode.CREATED.getMessage().getBytes());
+                        int endSize = taskManager.getAllTasks().size();
+                        if (beginSize != endSize) {
+                            ResponseHelper.sendCreated(exchange);
+                        } else {
+                            ResponseHelper.sendNotAcceptable(exchange);
                         }
                     } else if (partsPaths.length == 2) {
                         String[] partsQuery = query.split("&");
-                        if(partsQuery.length > 1) {
-                            exchange.sendResponseHeaders(HttpStatusCode.BAD_REQUEST.getCode(), 0);
-                            try (OutputStream os = exchange.getResponseBody()) {
-                                os.write(HttpStatusCode.BAD_REQUEST.getMessage().getBytes());
-                            }
+                        if (partsQuery.length > 1) {
+                            ResponseHelper.sendBadRequest(exchange);
                         } else {
                             String[] taskIdParam = partsQuery[0].split("=");
-                            task.setStatus(Status.IN_PROGRESS);
-
+                            try {
+                                int taskId = Integer.parseInt(taskIdParam[1]);
+                                if (!taskManager.checkIntersectionAllTasks(task)) {
+                                    taskManager.deleteTaskById(taskId);
+                                    task.setId(taskId);
+                                    taskManager.updateTask(task);
+                                    ResponseHelper.sendCreated(exchange);
+                                } else {
+                                    ResponseHelper.sendNotAcceptable(exchange);
+                                }
+                            } catch (NumberFormatException e) {
+                                ResponseHelper.sendBadRequest(exchange);
+                            }
                         }
                     } else {
-                        exchange.sendResponseHeaders(HttpStatusCode.BAD_REQUEST.getCode(), 0);
-                        try (OutputStream os = exchange.getResponseBody()) {
-                            os.write(HttpStatusCode.BAD_REQUEST.getMessage().getBytes());
-                        }
+                        ResponseHelper.sendBadRequest(exchange);
                     }
                 } catch (JsonSyntaxException | NullPointerException e) {
-                    exchange.sendResponseHeaders(HttpStatusCode.BAD_REQUEST.getCode(), 0);
-                    try (OutputStream os = exchange.getResponseBody()) {
-                        os.write(HttpStatusCode.BAD_REQUEST.getMessage().getBytes());
-                    }
+                    ResponseHelper.sendBadRequest(exchange);
                 }
-
-
                 break;
             }
             case "DELETE": {
+                if (partsPaths.length == 2 && query == null) {
+                    ResponseHelper.sendBadRequest(exchange);
+                } else if (partsPaths.length == 2) {
+                    String[] partsQuery = query.split("&");
+                    if (partsQuery.length > 1) {
+                        ResponseHelper.sendBadRequest(exchange);
+                    } else {
+                        String[] taskIdParam = partsQuery[0].split("=");
+                        try {
+                            int taskId = Integer.parseInt(taskIdParam[1]);
+                            taskManager.deleteTaskById(taskId);
+                            ResponseHelper.sendOkWithoutBody(exchange);
+                        } catch (NumberFormatException e) {
+                            ResponseHelper.sendBadRequest(exchange);
+                        }
+                    }
+                } else {
+                    ResponseHelper.sendBadRequest(exchange);
+                }
                 break;
             }
             default: {
-
+                ResponseHelper.sendMethodNotAllowed(exchange);
             }
         }
     }
