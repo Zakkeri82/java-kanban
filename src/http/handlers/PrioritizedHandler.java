@@ -29,6 +29,8 @@ public class PrioritizedHandler implements HttpHandler {
             if (partsPaths.length == 2) {
                 List<Task> allTasks = taskManager.getPrioritizedTasks();
                 ResponseHelper.sendOk(exchange, gson, allTasks.toArray(new Task[0]));
+            } else {
+                ResponseHelper.sendBadRequest(exchange);
             }
         } else {
             ResponseHelper.sendMethodNotAllowed(exchange);

@@ -13,7 +13,11 @@ public class ResponseHelper {
     public static void sendOk(HttpExchange exchange, Gson gson, Task... tasks) throws IOException {
         exchange.sendResponseHeaders(HttpStatusCode.OK.getCode(), 0);
         try (OutputStream os = exchange.getResponseBody()) {
-            os.write(gson.toJson(tasks).getBytes());
+            if(tasks.length == 1) {
+                os.write(gson.toJson(tasks[0]).getBytes());
+            } else {
+                os.write(gson.toJson(tasks).getBytes());
+            }
         }
     }
 

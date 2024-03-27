@@ -65,7 +65,7 @@ public class HttpPrioritizedTest {
     }
 
     @Test
-    void checkGetBadRequestHistory400() throws IOException, InterruptedException {
+    void checkGetBadRequestPrioritized400() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/prioritized/56");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -73,14 +73,15 @@ public class HttpPrioritizedTest {
     }
 
     @Test
-    void checkGetEmptyHistory404() throws IOException, InterruptedException {
+    void checkGetEmptyPrioritized() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/prioritized");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(404, response.statusCode());
+        assertEquals(200, response.statusCode());
+        assertEquals("[]",response.body());
     }
     @Test
-    void checkMissMethodHistory405() throws IOException, InterruptedException {
+    void checkMissMethodPrioritized405() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/prioritized");
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.noBody()).build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
