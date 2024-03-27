@@ -22,6 +22,15 @@ public class HttpTaskServer {
 
     private static final int PORT = 8080;
 
+    private final TaskManager taskManager;
+
+    private final HttpServer httpServer;
+
+    public HttpTaskServer(TaskManager taskManager) throws IOException {
+        this.taskManager = taskManager;
+        this.httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
+    }
+
     public static Gson getGson() {
         return new GsonBuilder()
                 .serializeNulls()
@@ -29,6 +38,19 @@ public class HttpTaskServer {
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .create();
+    }
+
+    public void start() {
+        httpServer.createContext("/tasks", new TasksHandler(taskManager));
+        httpServer.createContext("/epics", new EpicsHandler(taskManager));
+        httpServer.createContext("/subtask", new SubtasksHandler(taskManager));
+        httpServer.createContext("/history", new HistoryHandler(taskManager));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
+        httpServer.start();
+    }
+
+    public void stop() {
+        httpServer.stop(1);
     }
 
     public static void main(String[] args) throws IOException {
@@ -65,15 +87,8 @@ public class HttpTaskServer {
         fileBackedTaskManager.getTaskById(2);
         fileBackedTaskManager.getTaskById(1);
 
-        HttpServer httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
-
-        httpServer.createContext("/tasks", new TasksHandler(fileBackedTaskManager));
-        httpServer.createContext("/epics", new EpicsHandler(fileBackedTaskManager));
-        httpServer.createContext("/subtask", new SubtasksHandler(fileBackedTaskManager));
-        httpServer.createContext("/history", new HistoryHandler(fileBackedTaskManager));
-        httpServer.createContext("/prioritized", new PrioritizedHandler(fileBackedTaskManager));
-
-        httpServer.start();
+        HttpTaskServer httpTaskServer = new HttpTaskServer(fileBackedTaskManager);
+        httpTaskServer.start();
 
         System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
     }
