@@ -29,7 +29,7 @@ public class HttpHistoryTest {
     public HttpHistoryTest() throws IOException {
     }
 
-    class TaskListTypeToken extends TypeToken<List<Task>> {
+    static class TaskListTypeToken extends TypeToken<List<Task>> {
 
     }
 

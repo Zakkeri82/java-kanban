@@ -29,7 +29,7 @@ public class HttpPrioritizedTest {
     public HttpPrioritizedTest() throws IOException {
     }
 
-    class TaskSetTypeToken extends TypeToken<List<Task>> {
+    static class TaskSetTypeToken extends TypeToken<List<Task>> {
 
     }
 

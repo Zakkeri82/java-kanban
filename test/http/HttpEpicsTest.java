@@ -30,7 +30,7 @@ public class HttpEpicsTest {
     public HttpEpicsTest() throws IOException {
     }
 
-    class EpicListTypeToken extends TypeToken<List<Epic>> {
+    static class EpicListTypeToken extends TypeToken<List<Epic>> {
 
     }
 

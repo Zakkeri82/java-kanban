@@ -30,7 +30,7 @@ public class HttpTasksTest {
     public HttpTasksTest() throws IOException {
     }
 
-    class TaskListTypeToken extends TypeToken<List<Task>> {
+    static class TaskListTypeToken extends TypeToken<List<Task>> {
 
     }
 

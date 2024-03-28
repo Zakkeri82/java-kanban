@@ -32,7 +32,7 @@ public class HttpSubtasksTest {
     public HttpSubtasksTest() throws IOException {
     }
 
-    class SubtaskListTypeToken extends TypeToken<List<Subtask>> {
+    static class SubtaskListTypeToken extends TypeToken<List<Subtask>> {
 
     }
 
