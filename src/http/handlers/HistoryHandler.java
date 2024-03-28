@@ -28,7 +28,7 @@ public class HistoryHandler implements HttpHandler {
         if (exchange.getRequestMethod().equals("GET")) {
             if (partsPaths.length == 2) {
                 List<Task> allTasks = taskManager.getHistoryManager().getHistory();
-                if(allTasks != null) {
+                if (allTasks != null) {
                     ResponseHelper.sendOk(exchange, gson, allTasks.toArray(new Task[0]));
                 } else {
                     ResponseHelper.sendNotFound(exchange);

@@ -57,10 +57,10 @@ public class HttpTasksTest {
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        List<Task> usersList = HttpTaskServer.getGson().fromJson(response.body(), new TaskListTypeToken().getType());
+        List<Task> tasks = HttpTaskServer.getGson().fromJson(response.body(), new TaskListTypeToken().getType());
         assertEquals(200, response.statusCode());
-        assertEquals(task1, usersList.get(0));
-        assertEquals(task2, usersList.get(1));
+        assertEquals(task1, tasks.get(0));
+        assertEquals(task2, tasks.get(1));
     }
 
     @Test
@@ -135,5 +135,51 @@ public class HttpTasksTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
         assertEquals(Status.IN_PROGRESS, taskManager.getTaskById(1).getStatus());
+    }
+
+    @Test
+    void checkPostBadRequest() throws IOException, InterruptedException {
+        Task task1 = new Task("Первая", "простая", LocalDateTime.now(), Duration.ofMinutes(10));
+        taskManager.createTask(task1);
+
+        URI url = URI.create("http://localhost:8080/tasks?id=two");
+        String requestBody = HttpTaskServer.getGson().toJson(task1);
+        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(400, response.statusCode());
+    }
+
+    @Test
+    void checkDelete200() throws IOException, InterruptedException {
+        Task task1 = new Task("Первая", "простая", LocalDateTime.now(), Duration.ofMinutes(10));
+        taskManager.createTask(task1);
+
+        URI url = URI.create("http://localhost:8080/tasks/?id=1");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, response.statusCode());
+        assertEquals(0, taskManager.getAllTasks().size());
+    }
+
+    @Test
+    void checkDeleteBadRequest() throws IOException, InterruptedException {
+        Task task1 = new Task("Первая", "простая", LocalDateTime.now(), Duration.ofMinutes(10));
+        taskManager.createTask(task1);
+
+        URI url = URI.create("http://localhost:8080/tasks");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(400, response.statusCode());
+    }
+
+    @Test
+    void checkMissMethodTask() throws IOException, InterruptedException {
+        Task task1 = new Task("Первая", "простая", LocalDateTime.now(), Duration.ofMinutes(10));
+        taskManager.createTask(task1);
+
+        URI url = URI.create("http://localhost:8080/tasks?id=1");
+        HttpRequest request = HttpRequest.newBuilder().uri(url).PUT(HttpRequest.BodyPublishers.noBody()).build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertEquals(405, response.statusCode());
     }
 }

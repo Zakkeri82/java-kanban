@@ -16,8 +16,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -78,8 +76,9 @@ public class HttpPrioritizedTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        assertEquals("[]",response.body());
+        assertEquals("[]", response.body());
     }
+
     @Test
     void checkMissMethodPrioritized405() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/prioritized");

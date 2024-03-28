@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ManagersTest {
 
     @Test
-    void addHistory1Task() {
+    void initTaskManager() {
         TaskManager taskManager = Managers.getDefault();
         assertNotNull(taskManager, "Экземпляр менеджера не инициализирован");
         TaskManager taskManager2 = Managers.getDefault();

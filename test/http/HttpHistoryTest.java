@@ -79,6 +79,7 @@ public class HttpHistoryTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(404, response.statusCode());
     }
+
     @Test
     void checkMissMethodHistory405() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/history");
