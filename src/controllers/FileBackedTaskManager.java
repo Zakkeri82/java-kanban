@@ -79,7 +79,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
      * @param file файл с сохраненным состоянием
      * @return восстановленый экземпляр менеджера задач
      */
-    static FileBackedTaskManager loadFromFile(File file) {
+    public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file.toPath().toFile());
         List<String> loadStrings;
         Map<Integer, Task> temp = new HashMap<>();

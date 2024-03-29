@@ -197,9 +197,7 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void createTask(Task task) {
-        boolean intersection = getPrioritizedTasks().stream()
-                .filter(task1 -> checkIntersectionTime(task, task1))
-                .anyMatch(task1 -> true);
+        boolean intersection = checkIntersectionAllTasks(task);
         if (task != null && task.getId() < 0 && !intersection) {
             task.setId(id++);
             tasks.put(task.getId(), task);
@@ -228,9 +226,7 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void createSubtaskByEpic(Epic epic, Subtask subtask) {
-        boolean intersection = getPrioritizedTasks().stream()
-                .filter(task1 -> checkIntersectionTime(subtask, task1))
-                .anyMatch(task1 -> true);
+        boolean intersection = checkIntersectionAllTasks(subtask);
         if (subtask != null && epic.getId() != -1 && subtask.getId() < 0 && !intersection) {
             subtask.setId(id++);
             subTasks.put(subtask.getId(), subtask);
@@ -264,9 +260,7 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void updateTask(Task task) {
-        boolean intersection = getPrioritizedTasks().stream()
-                .filter(task1 -> checkIntersectionTime(task, task1))
-                .anyMatch(task1 -> true);
+        boolean intersection = checkIntersectionAllTasks(task);
         if (task != null && task.getId() > 0 && !intersection) {
             tasks.put(task.getId(), task);
             prioritizedTasks.remove(task);
@@ -293,9 +287,7 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void updateSubtask(Subtask subtask) {
-        boolean intersection = getPrioritizedTasks().stream()
-                .filter(task1 -> checkIntersectionTime(subtask, task1))
-                .anyMatch(task1 -> true);
+        boolean intersection = checkIntersectionAllTasks(subtask);
         if (subtask != null && subtask.getId() > 0 && !intersection) {
             subTasks.put(subtask.getId(), subtask);
             ArrayList<Integer> subtasksId = epics.get(subtask.getEpicId()).getSubsId();
@@ -314,6 +306,19 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Task> getPrioritizedTasks() {
         return new ArrayList<>(this.prioritizedTasks);
+    }
+
+    /**
+     * проверка наличия пересечения задачи с уже существующими
+     *
+     * @param task задача
+     * @return ркзультат проверки
+     */
+    @Override
+    public boolean checkIntersectionAllTasks(Task task) {
+        return getPrioritizedTasks().stream()
+                .filter(task1 -> checkIntersectionTime(task, task1))
+                .anyMatch(task1 -> true);
     }
 
     private Status checkStatusEpic(ArrayList<Integer> subtasksId) {
